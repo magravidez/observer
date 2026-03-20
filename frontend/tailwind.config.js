@@ -5,18 +5,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Forecast.ioT design system
         primary: {
-          DEFAULT: "#6367FF",
-          foreground: "#FFFFFF",
+          DEFAULT: "#08CB00",
+          foreground: "#000000",
         },
         secondary: {
-          DEFAULT: "#C9BEFF",
-          foreground: "#1e1b4b",
-        },
-        tertiary: {
-          DEFAULT: "#FFDBFD",
-          foreground: "#4a044e",
+          DEFAULT: "#06923E",
+          foreground: "#FFFFFF",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -42,7 +37,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Ubuntu Mono", "ui-monospace", "monospace"],
+        mono: ["Ubuntu Mono", "ui-monospace", "monospace"],
       },
     },
   },

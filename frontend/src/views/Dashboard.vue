@@ -1,20 +1,22 @@
 <template>
-  <div class="min-h-screen bg-background px-6 py-8">
+  <div class="min-h-screen bg-background px-4 py-6 sm:px-6 sm:py-8">
     <!-- Header -->
-    <header class="mb-8 flex items-center justify-between">
+    <header
+      class="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between"
+    >
       <div class="flex items-center gap-3">
         <img
-          src="/forecast_iot_logo.png"
-          class="h-10 w-10"
-          alt="Forecast.ioT icon"
+          src="/observer_logo.png"
+          class="h-10 w-10 object-contain"
+          alt="obSERVER logo"
         />
         <div>
           <h1 class="text-xl font-black tracking-tight text-foreground">
-            Forecast.ioT
+            obSERVER
           </h1>
           <p class="text-xs font-light text-muted-foreground">
-            Live weather station dashboard developed by Mariel A. Gravidez of
-            MI231
+            Live server room monitoring dashboard developed by Mariel A.
+            Gravidez of MI231
           </p>
         </div>
       </div>
@@ -23,12 +25,15 @@
       >
         <RefreshCw
           :class="[
-            'h-3.5 w-3.5',
+            'h-3.5 w-3.5 flex-shrink-0',
             isRefreshing ? 'animate-spin text-primary' : '',
           ]"
         />
-        <span>Auto-refresh every 5s</span>
-        <span v-if="lastUpdated" class="ml-2 text-foreground/50">
+        <span class="whitespace-nowrap">Auto-refresh every 15s</span>
+        <span
+          v-if="lastUpdated"
+          class="ml-2 whitespace-nowrap text-foreground/50"
+        >
           &bull; Last updated {{ lastUpdated }}
         </span>
       </div>
@@ -50,104 +55,132 @@
         <TabsTrigger value="history">History</TabsTrigger>
       </TabsList>
 
-      <!-- Tab 1: Stat Cards + Charts -->
+      <!-- Tab 1: Status + Sensor Cards + Humidity Chart -->
       <TabsContent value="overview">
-        <!-- Stat Cards -->
-        <section class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <!-- Temperature Card -->
-          <Card class="shadow-sm border-0" style="background: #4f63d2">
-            <CardHeader class="pb-2">
-              <div class="flex items-center justify-between">
-                <CardTitle class="text-3xl font-black text-white/90"
-                  >Temperature</CardTitle
-                >
-                <div
-                  class="flex h-14 w-14 items-center justify-center rounded-full bg-white/20"
-                >
-                  <Thermometer class="h-10 w-10 text-white" />
-                </div>
+        <!-- Status Card + Sensor Data Card -->
+        <section class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <!-- Status Card -->
+          <Card
+            class="shadow-sm border-0"
+            :style="isWarning ? 'background: #2a0e0e' : 'background: #0e2a0e'"
+          >
+            <CardContent class="flex h-full items-center gap-4 py-5">
+              <div
+                class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-white/10 sm:h-16 sm:w-16"
+              >
+                <AlertTriangle
+                  v-if="isWarning"
+                  class="h-8 w-8 sm:h-10 sm:w-10"
+                  style="color: #ff5555"
+                />
+                <ShieldCheck
+                  v-else
+                  class="h-8 w-8 text-primary sm:h-10 sm:w-10"
+                />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div v-if="latest" class="flex items-end gap-2">
-                <span class="text-4xl font-black text-white">{{
-                  latest.temperature.toFixed(1)
-                }}</span>
-                <span class="mb-1 text-xl font-light text-white/70"
-                  >&deg;C</span
+              <div v-if="latest">
+                <p
+                  class="text-xs font-light tracking-widest text-white/50 uppercase"
                 >
+                  Status
+                </p>
+                <span
+                  class="text-3xl font-black sm:text-4xl"
+                  :style="isWarning ? 'color: #ff5555' : 'color: #08CB00'"
+                >
+                  {{ isWarning ? "WARNING" : "GOOD" }}
+                </span>
+                <p class="mt-1 text-xs font-light text-white/60">
+                  <span v-if="isWarning">
+                    Temperature exceeded {{ TEMP_THRESHOLD }}&deg;C &mdash;
+                    alarm active
+                  </span>
+                  <span v-else>
+                    Temperature within safe range (&le;
+                    {{ TEMP_THRESHOLD }}&deg;C)
+                  </span>
+                </p>
               </div>
               <div v-else class="text-3xl font-black text-white/50">--</div>
-              <p class="mt-1 text-xs font-light text-white/60">
-                Current reading from DHT11 sensor
-              </p>
             </CardContent>
           </Card>
 
-          <!-- Humidity Card -->
-          <Card class="shadow-sm border-0" style="background: #7c3aed">
-            <CardHeader class="pb-2">
-              <div class="flex items-center justify-between">
-                <CardTitle class="text-3xl font-black text-white/90"
-                  >Humidity</CardTitle
-                >
+          <!-- Sensor Data Card -->
+          <Card class="shadow-sm border-0 bg-card">
+            <CardContent class="flex h-full items-center py-5">
+              <div v-if="latest" class="flex w-full min-w-0 items-center">
+                <!-- Temperature -->
                 <div
-                  class="flex h-14 w-14 items-center justify-center rounded-full bg-white/20"
+                  class="flex flex-1 min-w-0 items-center justify-center gap-2 sm:gap-4"
                 >
-                  <Droplets class="h-10 w-10 text-white" />
+                  <div
+                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/10 sm:h-14 sm:w-14"
+                  >
+                    <Thermometer class="h-5 w-5 text-primary sm:h-8 sm:w-8" />
+                  </div>
+                  <div class="min-w-0">
+                    <p
+                      class="text-[10px] font-light tracking-widest text-white/50 uppercase sm:text-xs"
+                    >
+                      Temperature
+                    </p>
+                    <div class="flex items-baseline gap-0.5">
+                      <span
+                        class="text-2xl font-black text-white sm:text-4xl"
+                        >{{ latest.temperature.toFixed(1) }}</span
+                      >
+                      <span
+                        class="text-base font-light text-white/60 sm:text-xl"
+                        >&deg;C</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- Divider -->
+                <div
+                  class="mx-2 h-12 w-px flex-shrink-0 bg-white/10 sm:mx-4 sm:h-16"
+                ></div>
+                <!-- Humidity -->
+                <div
+                  class="flex flex-1 min-w-0 items-center justify-center gap-2 sm:gap-4"
+                >
+                  <div
+                    class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/10 sm:h-14 sm:w-14"
+                  >
+                    <Droplets class="h-5 w-5 text-primary sm:h-8 sm:w-8" />
+                  </div>
+                  <div class="min-w-0">
+                    <p
+                      class="text-[10px] font-light tracking-widest text-white/50 uppercase sm:text-xs"
+                    >
+                      Humidity
+                    </p>
+                    <div class="flex items-baseline gap-0.5">
+                      <span
+                        class="text-2xl font-black text-white sm:text-4xl"
+                        >{{ latest.humidity.toFixed(1) }}</span
+                      >
+                      <span
+                        class="text-base font-light text-white/60 sm:text-xl"
+                        >%</span
+                      >
+                    </div>
+                  </div>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div v-if="latest" class="flex items-end gap-2">
-                <span class="text-4xl font-black text-white">{{
-                  latest.humidity.toFixed(1)
-                }}</span>
-                <span class="mb-1 text-xl font-light text-white/70">%</span>
-              </div>
-              <div v-else class="text-2xl font-black text-white/50">--</div>
-              <p class="mt-1 text-xs font-light text-white/60">
-                Current reading from DHT11 sensor
-              </p>
+              <div v-else class="text-3xl font-black text-white/50">--</div>
             </CardContent>
           </Card>
         </section>
 
-        <!-- Charts -->
-        <section class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <!-- Temperature Chart -->
+        <!-- Humidity Line Chart -->
+        <section>
           <Card>
             <CardHeader>
               <div class="flex items-center gap-2">
-                <Thermometer class="h-4 w-4 text-primary" />
+                <Activity class="h-4 w-4 text-primary" />
                 <CardTitle class="text-sm font-black"
-                  >Temperature Over Time</CardTitle
-                >
-              </div>
-              <p class="text-xs font-light text-muted-foreground">
-                Last 10 readings (&deg;C)
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div v-if="chartReadings.length > 0" class="h-52">
-                <Line :data="temperatureChartData" :options="chartOptions" />
-              </div>
-              <div
-                v-else
-                class="flex h-52 items-center justify-center text-sm font-light text-muted-foreground"
-              >
-                Waiting for data...
-              </div>
-            </CardContent>
-          </Card>
-
-          <!-- Humidity Chart -->
-          <Card>
-            <CardHeader>
-              <div class="flex items-center gap-2">
-                <Droplets class="h-4 w-4 text-violet-500" />
-                <CardTitle class="text-sm font-black"
-                  >Humidity Over Time</CardTitle
+                  >Temperature & Humidity Over Time</CardTitle
                 >
               </div>
               <p class="text-xs font-light text-muted-foreground">
@@ -155,12 +188,12 @@
               </p>
             </CardHeader>
             <CardContent>
-              <div v-if="chartReadings.length > 0" class="h-52">
+              <div v-if="chartReadings.length > 0" class="h-48 sm:h-52">
                 <Line :data="humidityChartData" :options="chartOptions" />
               </div>
               <div
                 v-else
-                class="flex h-52 items-center justify-center text-sm font-light text-muted-foreground"
+                class="flex h-48 items-center justify-center text-sm font-light text-muted-foreground sm:h-52"
               >
                 Waiting for data...
               </div>
@@ -197,7 +230,7 @@
                     </TableHead>
                     <TableHead class="font-black">
                       <div class="flex items-center gap-1.5">
-                        <Droplets class="h-3.5 w-3.5 text-violet-500" />
+                        <Droplets class="h-3.5 w-3.5 text-primary" />
                         Humidity (%)
                       </div>
                     </TableHead>
@@ -277,8 +310,11 @@ import {
   Droplets,
   RefreshCw,
   AlertCircle,
+  AlertTriangle,
+  ShieldCheck,
   Clock,
   Table as TableIcon,
+  Activity,
 } from "lucide-vue-next"
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -306,6 +342,9 @@ ChartJS.register(
   Filler
 )
 
+// Temperature threshold for WARNING state (degrees Celsius)
+const TEMP_THRESHOLD = 31
+
 const readings = ref<Reading[]>([])
 const error = ref<string | null>(null)
 const isRefreshing = ref(false)
@@ -313,53 +352,52 @@ const lastUpdated = ref<string | null>(null)
 
 let refreshInterval: ReturnType<typeof setInterval> | null = null
 
-// Most recent reading for the stat cards
+// Most recent reading for the status and sensor cards
 const latest = computed<Reading | null>(() =>
   readings.value.length > 0 ? readings.value[0] : null
 )
 
-// Last 10 readings reversed to chronological order for charts
+// WARNING when the latest temperature exceeds the threshold
+const isWarning = computed<boolean>(
+  () => latest.value !== null && latest.value.temperature > TEMP_THRESHOLD
+)
+
+// Last 10 readings reversed to chronological order for the chart
 const chartReadings = computed<Reading[]>(() =>
   [...readings.value].slice(0, 10).reverse()
 )
 
-// Last 20 readings sorted descending by ID for the table
+// Last 20 readings ordered by most recent for the history table
 const tableReadings = computed<Reading[]>(() =>
-  [...readings.value].sort((a, b) => b.id - a.id)
+  [...readings.value].slice(0, 20).sort((a, b) => b.id - a.id)
 )
 
-// Labels derived from the createdAt timestamps for chart x-axis
+// Labels derived from timestamps for the chart x-axis
 const chartLabels = computed<string[]>(() =>
   chartReadings.value.map((r) => formatChartLabel(r.createdAt))
 )
-
-const temperatureChartData = computed(() => ({
-  labels: chartLabels.value,
-  datasets: [
-    {
-      label: "Temperature (°C)",
-      data: chartReadings.value.map((r) => r.temperature),
-      borderColor: "#6367FF",
-      backgroundColor: "rgba(99, 103, 255, 0.08)",
-      borderWidth: 2,
-      pointRadius: 2,
-      pointHoverRadius: 5,
-      tension: 0.3,
-      fill: true,
-    },
-  ],
-}))
 
 const humidityChartData = computed(() => ({
   labels: chartLabels.value,
   datasets: [
     {
+      label: "Temperature (\u00b0C)",
+      data: chartReadings.value.map((r) => r.temperature),
+      borderColor: "#08CB00",
+      backgroundColor: "rgba(8, 203, 0, 0.15)",
+      borderWidth: 2,
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      tension: 0.3,
+      fill: true,
+    },
+    {
       label: "Humidity (%)",
       data: chartReadings.value.map((r) => r.humidity),
-      borderColor: "#a78bfa",
-      backgroundColor: "rgba(167, 139, 250, 0.08)",
+      borderColor: "#06923E",
+      backgroundColor: "rgba(6, 146, 62, 0.15)",
       borderWidth: 2,
-      pointRadius: 2,
+      pointRadius: 3,
       pointHoverRadius: 5,
       tension: 0.3,
       fill: true,
@@ -367,15 +405,58 @@ const humidityChartData = computed(() => ({
   ],
 }))
 
-// Shared options for both charts
+// Custom plugin: draw a vertical crosshair line on hover
+const crosshairPlugin = {
+  id: "crosshair",
+  afterDatasetsDraw(chart: any) {
+    const active = chart.tooltip?._active
+    if (!active || active.length === 0) return
+    const x = active[0]?.element?.x
+    if (x == null) return
+    const ctx: CanvasRenderingContext2D = chart.ctx
+    const topY = chart.scales.y.top
+    const bottomY = chart.scales.y.bottom
+    ctx.save()
+    ctx.beginPath()
+    ctx.moveTo(x, topY)
+    ctx.lineTo(x, bottomY)
+    ctx.lineWidth = 1
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)"
+    ctx.setLineDash([4, 4])
+    ctx.stroke()
+    ctx.restore()
+  },
+}
+ChartJS.register(crosshairPlugin)
+
+// Shared chart options
 const chartOptions: ChartOptions<"line"> = {
   responsive: true,
   maintainAspectRatio: false,
+  interaction: {
+    mode: "index",
+    intersect: false,
+  },
   plugins: {
-    legend: { display: false },
+    legend: {
+      display: true,
+      position: "top",
+      align: "end",
+      labels: {
+        color: "#94a3b8",
+        font: { size: 11 },
+        boxWidth: 12,
+        boxHeight: 2,
+        padding: 16,
+        usePointStyle: true,
+        pointStyle: "line",
+      },
+    },
     tooltip: {
-      backgroundColor: "#1e1b4b",
-      titleColor: "#C9BEFF",
+      mode: "index",
+      intersect: false,
+      backgroundColor: "#0e2a0e",
+      titleColor: "#08CB00",
       bodyColor: "#ffffff",
       padding: 10,
       cornerRadius: 8,
@@ -393,7 +474,7 @@ const chartOptions: ChartOptions<"line"> = {
       },
     },
     y: {
-      grid: { color: "rgba(0,0,0,0.05)" },
+      grid: { color: "rgba(255,255,255,0.05)" },
       ticks: { color: "#94a3b8", font: { size: 10 } },
       beginAtZero: false,
     },
@@ -444,8 +525,8 @@ async function loadReadings(): Promise<void> {
 
 onMounted(() => {
   loadReadings()
-  // Poll every 5 seconds to match the Arduino send interval
-  refreshInterval = setInterval(loadReadings, 5000)
+  // Poll every 15 seconds to match the Arduino sending interval
+  refreshInterval = setInterval(loadReadings, 15000)
 })
 
 onUnmounted(() => {

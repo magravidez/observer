@@ -10,11 +10,11 @@
     --card-foreground: 240 10% 95%;
     --muted: 240 8% 24%;
     --muted-foreground: 240 5% 60%;
-    --accent: 258 60% 30%;
-    --accent-foreground: 258 100% 90%;
-    --border: 240 8% 26%;
-    --input: 240 8% 26%;
-    --ring: 237 100% 69%;
+    --accent: 145 93% 29%;
+    --accent-foreground: 0 0% 100%;
+    --border: 284 6% 26%;
+    --input: 284 6% 26%;
+    --ring: 118 100% 40%;
     --radius: 0.75rem;
   }
 
@@ -24,6 +24,6 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: "Merriweather", Georgia, serif;
+    font-family: "Ubuntu Mono", ui-monospace, monospace;
   }
 }

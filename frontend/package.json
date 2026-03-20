@@ -1,7 +1,7 @@
 {
-  "name": "forecast-iot-frontend",
+  "name": "observer-frontend",
   "version": "1.0.0",
-  "description": "Forecast.ioT frontend dashboard - Vue.js + TypeScript + shadcn-vue",
+  "description": "obSERVER frontend dashboard - Vue.js + TypeScript + shadcn-vue",
   "private": true,
   "type": "module",
   "scripts": {

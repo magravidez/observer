@@ -10,11 +10,11 @@ datasource db {
   provider = "postgresql"
 }
 
-model ForecastIOT {
+model ObSERVER {
   id          Int      @id @default(autoincrement())
   temperature Float
   humidity    Float
   createdAt   DateTime @default(now())
 
-  @@map("forecast_iot")
+  @@map("observer")
 }

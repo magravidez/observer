@@ -26,7 +26,7 @@ router.post("/", async (req: Request, res: Response) => {
   }
 
   try {
-    const reading = await prisma.forecastIOT.create({
+    const reading = await prisma.obSERVER.create({
       data: {
         temperature: temp,
         humidity: hum,
@@ -59,7 +59,7 @@ router.get("/", async (req: Request, res: Response) => {
   }
 
   try {
-    const readings = await prisma.forecastIOT.findMany({
+    const readings = await prisma.obSERVER.findMany({
       orderBy: { createdAt: "desc" },
       take: limit,
       select: {

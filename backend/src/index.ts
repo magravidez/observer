@@ -18,7 +18,7 @@ app.use(express.json())
 
 // Health check endpoint
 app.get("/", (_req, res) => {
-  res.json({ status: "ok", project: "Forecast.ioT API" })
+  res.json({ status: "UP", project: "obSERVER" })
 })
 
 // Resource routes
@@ -30,5 +30,5 @@ app.use((_req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`Forecast.ioT API running on http://localhost:${PORT}`)
+  console.log(`obSERVER API running on http://localhost:${PORT}`)
 })

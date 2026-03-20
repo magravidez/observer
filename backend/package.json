@@ -1,7 +1,7 @@
 {
-  "name": "forecast-iot-backend",
+  "name": "observer-backend",
   "version": "1.0.0",
-  "description": "Forecast.ioT backend API - Express.js + TypeScript + Prisma + NeonDB",
+  "description": "obSERVER backend API - Express.js + TypeScript + Prisma + NeonDB",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",

@@ -90,3 +90,9 @@ npm run dev
 ```
 
 The dashboard will be available at `http://localhost:5173`.
+
+---
+
+## Hardware Setup
+
+![obSERVER Hardware Setup](/arduino/observer_hardware_setup.jpg)
